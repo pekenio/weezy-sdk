@@ -2,11 +2,15 @@
 
 Typed SMS and WhatsApp clients for Python 3.11+.
 
-## Install locally
+## Installation
 
 ```sh
-pip install /absolute/path/to/weezy-sdk/python
+pip install weezy-sdk
 ```
+
+The package is named `weezy-sdk`; import clients from `weezy`.
+
+For local development, install from this repository with `pip install ./python`.
 
 ## Synchronous client
 
