@@ -1,5 +1,5 @@
-// Install the local TypeScript package in this directory first.
-import { Weezy } from '@weezy/sdk';
+// Install the SDK first: npm install @weezy-app/sdk
+import { Weezy } from '@weezy-app/sdk';
 const client = new Weezy({
   clientId: process.env.WEEZY_CLIENT_ID,
   clientSecret: process.env.WEEZY_CLIENT_SECRET,

@@ -1,8 +1,14 @@
-# @weezy/sdk
+# @weezy-app/sdk
 
 Typed Weezy SMS and WhatsApp client for Node.js 20+.
 
-## Install locally
+## Install
+
+```sh
+npm install @weezy-app/sdk
+```
+
+## Develop locally
 
 ```sh
 cd weezy-sdk/typescript
@@ -15,7 +21,7 @@ npm install /absolute/path/to/weezy-sdk/typescript
 ## SMS and WhatsApp
 
 ```ts
-import { Weezy, WeezyError } from '@weezy/sdk';
+import { Weezy, WeezyError } from '@weezy-app/sdk';
 
 const client = new Weezy({
   clientId: process.env.WEEZY_CLIENT_ID!,
@@ -36,7 +42,7 @@ const result = await client.whatsapp(process.env.WEEZY_INSTANCE_ID!).messages.se
 
 These send methods create real messages when used with live credentials. Use a dedicated test account and recipient when testing.
 
-CommonJS is supported: `const { Weezy } = require('@weezy/sdk')`.
+CommonJS is supported: `const { Weezy } = require('@weezy-app/sdk')`.
 
 SMS methods: `balance()`, `senders()`, `send(body)`, `sendBulk(body)`, `status(params)`, `optOuts(body)`.
 

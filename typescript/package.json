@@ -1,5 +1,5 @@
 {
-  "name": "@weezy/sdk",
+  "name": "@weezy-app/sdk",
   "version": "0.1.0",
   "description": "Weezy SMS and WhatsApp SDK for Node.js and TypeScript",
   "type": "module",

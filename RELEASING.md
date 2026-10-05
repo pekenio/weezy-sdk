@@ -6,7 +6,7 @@ The repository contains both SDKs. Version numbers are in `typescript/package.js
 
 The first publication can be made locally from `typescript` with `npm publish --access public` after `npm login` and passing tests. Complete the requested browser/2FA challenge.
 
-For subsequent releases, configure an npm Trusted Publisher for `@weezy/sdk` using this GitHub repository and workflow filename `publish.yml`, with publish permission. The workflow runs on GitHub-hosted runners and uses OIDC without a stored npm token.
+For subsequent releases, configure an npm Trusted Publisher for `@weezy-app/sdk` using this GitHub repository and workflow filename `publish.yml`, with publish permission. The workflow runs on GitHub-hosted runners and uses OIDC without a stored npm token.
 
 ## PyPI
 

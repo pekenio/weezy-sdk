@@ -12,7 +12,11 @@ The Python SDK is available on [PyPI](https://pypi.org/project/weezy-sdk/):
 pip install weezy-sdk
 ```
 
-Import Python clients with `from weezy import Weezy, AsyncWeezy`. The JavaScript / TypeScript SDK is available from the [GitHub release](https://github.com/pekenio/weezy-sdk/releases/tag/v0.1.0); npm publication is still pending.
+Import Python clients with `from weezy import Weezy, AsyncWeezy`. The JavaScript / TypeScript SDK is available on [npm](https://www.npmjs.com/package/@weezy-app/sdk):
+
+```sh
+npm install @weezy-app/sdk
+```
 
 ## Authentication and transport
 
