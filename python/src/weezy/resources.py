@@ -1171,4 +1171,3 @@ class AsyncWhatsAppAPI:
         self.presence = AsyncPresenceAPI(client, instance_id)
         self.products = AsyncProductsAPI(client, instance_id)
         self.stories = AsyncStoriesAPI(client, instance_id)
-

@@ -192,4 +192,3 @@ Generated from the backend routes. Base URL: `https://api.weezy.app/client/api/v
 | `whatsapp(instanceId).stories.sendTextStorie` | `whatsapp(instance_id).stories.send_text_storie` | POST | `/{instance_id}/stories/text` |
 | `whatsapp(instanceId).stories.sendImageStorie` | `whatsapp(instance_id).stories.send_image_storie` | POST | `/{instance_id}/stories/image` |
 | `whatsapp(instanceId).stories.sendVideoStorie` | `whatsapp(instance_id).stories.send_video_storie` | POST | `/{instance_id}/stories/video` |
-

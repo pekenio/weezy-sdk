@@ -90,7 +90,7 @@ for async_ in (False,True):
 (root/'typescript/src/types.ts').write_text(ts_types)
 (root/'typescript/src/resources.ts').write_text(ts_resources)
 (root/'python/src/weezy/types.py').write_text(py_types)
-(root/'python/src/weezy/resources.py').write_text(py_resources)
+(root/'python/src/weezy/resources.py').write_text(py_resources.rstrip() + '\n')
 print('Generated',sum(map(len,groups.values())),'operations in both SDKs')
 
 reference = "# Public API methods\n\nGenerated from the backend routes. Base URL: `https://api.weezy.app/client/api/v1`.\n\n"
@@ -102,4 +102,4 @@ for group, ops in groups.items():
         reference += f"| `{prefix}.{camel(op['name'])}` | `{pyprefix}.{op['name']}` | {op['method']} | `{op['path']}` |\n"
     reference += "\n"
 for target in (root / "API.md", root / "typescript/API.md", root / "python/API.md"):
-    target.write_text(reference)
+    target.write_text(reference.rstrip() + '\n')
