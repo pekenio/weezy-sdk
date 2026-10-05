@@ -10,7 +10,7 @@ For subsequent releases, configure an npm Trusted Publisher for `@weezy/sdk` usi
 
 ## PyPI
 
-Before the first release, register a pending Trusted Publisher at https://pypi.org/manage/account/publishing/:
+Version 0.1.0 is published at https://pypi.org/project/weezy-sdk/. GitHub Trusted Publishing is configured with these values:
 
 - PyPI project: `weezy-sdk`
 - GitHub owner: `pekenio`

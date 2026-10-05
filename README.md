@@ -6,7 +6,13 @@ SDKs for the **public client API**, covering SMS and WhatsApp. The generated res
 - [Python](python/README.md): Python 3.11+, synchronous `Weezy` and asynchronous `AsyncWeezy`, TypedDict contracts and `py.typed`.
 - [API reference](API.md): all resource methods and routes.
 
-These packages are prepared for local installation; **they are not published to npm or PyPI**. Package names and versions are provisional.
+The Python SDK is available on [PyPI](https://pypi.org/project/weezy-sdk/):
+
+```sh
+pip install weezy-sdk
+```
+
+Import Python clients with `from weezy import Weezy, AsyncWeezy`. The JavaScript / TypeScript SDK is available from the [GitHub release](https://github.com/pekenio/weezy-sdk/releases/tag/v0.1.0); npm publication is still pending.
 
 ## Authentication and transport
 
