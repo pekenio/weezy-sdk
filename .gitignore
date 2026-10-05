@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.egg-info/
+__pycache__/
+.venv/
+
+/packages/
+
+.DS_Store
+.env
+.env.*
+.pypirc
+.npmrc
+build/
+*.log

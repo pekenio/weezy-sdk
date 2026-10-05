@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weezy-sdk"
+version = "0.1.0"
+license = "MIT"
+license-files = ["LICENSE"]
+description = "Typed synchronous and asynchronous Weezy SMS and WhatsApp SDK"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["httpx>=0.27,<1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+weezy = ["py.typed"]
+
+[project.urls]
+Homepage = "https://github.com/pekenio/weezy-sdk"
+Repository = "https://github.com/pekenio/weezy-sdk"
+Issues = "https://github.com/pekenio/weezy-sdk/issues"

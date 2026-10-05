@@ -1,0 +1,51 @@
+{
+  "name": "@weezy/sdk",
+  "version": "0.1.0",
+  "description": "Weezy SMS and WhatsApp SDK for Node.js and TypeScript",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "API.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc && tsc --module commonjs --moduleResolution node --outDir dist/cjs && node scripts/cjs.cjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^22.0.0"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pekenio/weezy-sdk.git",
+    "directory": "typescript"
+  },
+  "homepage": "https://github.com/pekenio/weezy-sdk",
+  "bugs": {
+    "url": "https://github.com/pekenio/weezy-sdk/issues"
+  }
+}
