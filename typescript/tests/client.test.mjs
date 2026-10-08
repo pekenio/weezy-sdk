@@ -11,9 +11,12 @@ test('SMS sends Basic authentication and returns unwrapped message', async () =>
     assert.equal(options.headers.Authorization, 'Basic ' + Buffer.from('fixture:test-only').toString('base64'));
     assert.equal(options.redirect, 'error');
     assert.deepEqual(JSON.parse(options.body), { to: '+2250700000000', body: 'Bonjour', sender_name: 'WEEZY' });
-    return json({ code: 200, msg: 'ok', data: { x_id: 'message-test' } });
+    return json({ code: 200, msg: 'ok', data: { x_id: 'message-test', unit_price: 0.027, cost: 0.054, unit: 'point' } });
   } });
-  assert.equal((await client.sms.send({ to: '+2250700000000', body: 'Bonjour', sender_name: 'WEEZY' })).x_id, 'message-test');
+  const message = await client.sms.send({ to: '+2250700000000', body: 'Bonjour', sender_name: 'WEEZY' });
+  assert.equal(message.x_id, 'message-test');
+  assert.equal(message.cost, 0.054);
+  assert.equal(message.unit, 'point');
 });
 test('WhatsApp preserves provider response and encodes instance IDs', async () => {
   const client = new Weezy({ ...credentials, fetch: async (url) => {
@@ -55,4 +58,11 @@ test('CommonJS entry point exports the client', () => {
 test('rejects unsafe configuration', () => {
   for (const baseUrl of ['file:///tmp', 'https://key:secret@example.com', 'https://example.com?token=test']) assert.throws(() => new Weezy({ ...credentials, baseUrl }));
   assert.throws(() => new Weezy({ ...credentials, timeoutMs: Infinity }));
+});
+test('SMS balance returns amounts in points', async () => {
+  const client = new Weezy({ ...credentials, fetch: async () => json({ code: 200, msg: 'ok', data: { currency: 'EUR', balance: 12.45, total_topped_up: 20, total_spent: 7.55, low_balance_threshold: 1.5, unit: 'point' } }) });
+  const wallet = await client.sms.balance();
+  assert.equal(wallet.balance, 12.45);
+  assert.equal(wallet.low_balance_threshold, 1.5);
+  assert.equal(wallet.unit, 'point');
 });

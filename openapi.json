@@ -8748,11 +8748,13 @@
           },
           "unit_price": {
             "title": "Unit Price",
-            "type": "integer"
+            "type": "number",
+            "description": "Price in points (1 point = 1 EUR, up to 3 decimals)"
           },
           "cost": {
             "title": "Cost",
-            "type": "integer"
+            "type": "number",
+            "description": "Price in points (1 point = 1 EUR, up to 3 decimals)"
           },
           "status": {
             "title": "Status",
@@ -8821,6 +8823,13 @@
             ],
             "default": null,
             "title": "Delivered At"
+          },
+          "unit": {
+            "const": "point",
+            "default": "point",
+            "title": "Unit",
+            "type": "string",
+            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 EUR)."
           }
         },
         "required": [
@@ -8835,7 +8844,8 @@
           "cost",
           "status",
           "source",
-          "created_time"
+          "created_time",
+          "unit"
         ],
         "title": "SmsMessageOut",
         "type": "object"
@@ -8880,11 +8890,13 @@
           },
           "amount_reserved": {
             "title": "Amount Reserved",
-            "type": "integer"
+            "type": "number",
+            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
           },
           "amount_refunded": {
             "title": "Amount Refunded",
-            "type": "integer"
+            "type": "number",
+            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
           },
           "created_time": {
             "format": "date-time",
@@ -8903,6 +8915,13 @@
             ],
             "default": null,
             "title": "Completed At"
+          },
+          "unit": {
+            "const": "point",
+            "default": "point",
+            "title": "Unit",
+            "type": "string",
+            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 EUR)."
           }
         },
         "required": [
@@ -8917,7 +8936,8 @@
           "failed_count",
           "amount_reserved",
           "amount_refunded",
-          "created_time"
+          "created_time",
+          "unit"
         ],
         "title": "SmsBatchOut",
         "type": "object"
@@ -8949,15 +8969,18 @@
           },
           "balance": {
             "title": "Balance",
-            "type": "integer"
+            "type": "number",
+            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
           },
           "total_topped_up": {
             "title": "Total Topped Up",
-            "type": "integer"
+            "type": "number",
+            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
           },
           "total_spent": {
             "title": "Total Spent",
-            "type": "integer"
+            "type": "number",
+            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
           },
           "display_currency": {
             "anyOf": [
@@ -8974,21 +8997,30 @@
           "low_balance_threshold": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "number"
               },
               {
                 "type": "null"
               }
             ],
             "default": null,
-            "title": "Low Balance Threshold"
+            "title": "Low Balance Threshold",
+            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
+          },
+          "unit": {
+            "const": "point",
+            "default": "point",
+            "title": "Unit",
+            "type": "string",
+            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 EUR)."
           }
         },
         "required": [
           "currency",
           "balance",
           "total_topped_up",
-          "total_spent"
+          "total_spent",
+          "unit"
         ],
         "title": "WalletOut",
         "type": "object"

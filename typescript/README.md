@@ -30,15 +30,19 @@ const client = new Weezy({
 });
 
 const wallet = await client.sms.balance();
+console.log(`Balance: ${wallet.balance} points`); // 1 point = 1 EUR
 const message = await client.sms.send({
   to: '+2250700000000', body: 'Bonjour !', sender_name: 'WEEZY',
 });
+console.log(`Cost: ${message.cost} points`);
 const status = await client.sms.status({ message_x_id: message.x_id });
 
 const result = await client.whatsapp(process.env.WEEZY_INSTANCE_ID!).messages.sendTextMessage({
   phone: '2250700000000', message: 'Bonjour !',
 });
 ```
+
+SMS amounts (`balance`, `cost`, `unit_price`, `amount_reserved`, ...) are numbers in **points** (1 point = 1 EUR, up to 3 decimals), with `unit: 'point'` on the object.
 
 These send methods create real messages when used with live credentials. Use a dedicated test account and recipient when testing.
 

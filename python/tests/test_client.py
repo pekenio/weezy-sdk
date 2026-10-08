@@ -62,8 +62,11 @@ class ClientTest(unittest.TestCase):
 class AsyncClientTest(unittest.IsolatedAsyncioTestCase):
     async def test_async_sms_and_whatsapp(self):
         async def handler(request):
-            if request.url.path.endswith('/sms/balance'): return httpx.Response(200, json={"code": 200, "msg": "ok", "data": {"balance": 500}})
+            if request.url.path.endswith('/sms/balance'): return httpx.Response(200, json={"code": 200, "msg": "ok", "data": {"currency": "EUR", "balance": 5.0, "total_topped_up": 10.0, "total_spent": 4.973, "unit": "point"}})
             return httpx.Response(200, json={"status": True})
         async with AsyncWeezy(**OPTIONS, transport=httpx.MockTransport(handler)) as client:
-            self.assertEqual((await client.sms.balance())["balance"], 500)
+            wallet = await client.sms.balance()
+            self.assertEqual(wallet["balance"], 5.0)
+            self.assertEqual(wallet["total_spent"], 4.973)
+            self.assertEqual(wallet["unit"], "point")
             self.assertTrue((await client.whatsapp("fixture").messages.send_text_message(body={"phone": "2250700000000", "message": "Bonjour"}))['status'])

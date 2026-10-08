@@ -1,4 +1,4 @@
-# Weezy SDKs — 0.1.0
+# Weezy SDKs — 0.2.0
 
 SDKs for the **public client API**, covering SMS and WhatsApp. The generated resources cover 126 operations across 124 paths. Dashboard, administration and webhook receiver routes are excluded.
 
@@ -24,7 +24,7 @@ Both channels use HTTP Basic authentication with the **client ID and client secr
 
 The default base URL is `https://api.weezy.app/client/api/v1`. For local development use `http://localhost:8000/client/api/v1`. The configured URL must include the full client API prefix.
 
-SMS responses are unwrapped from `{code, msg, data}`. WhatsApp responses preserve the provider payload and extra fields. Monetary amounts are in the currency's minor units (EUR cents). Sending requires the account's available balance or WhatsApp subscription and connected instance, as enforced by the API.
+SMS responses are unwrapped from `{code, msg, data}`. WhatsApp responses preserve the provider payload and extra fields. Monetary amounts are in **points**, returned as JSON numbers with up to 3 decimals (for example `"cost": 0.027`, `"balance": 12.45`) and `"unit": "point"` on the object. 1 point = 1 EUR. This applies to the SMS balance (`balance`, `total_topped_up`, `total_spent`, `low_balance_threshold`), messages (`unit_price`, `cost`), bulk batches (`amount_reserved`, `amount_refunded`) and SMS webhook events (`cost`, `refunded`). Before 0.2.0 these amounts were integers in EUR cents; see the [changelog](CHANGELOG.md). Sending requires the account's available balance or WhatsApp subscription and connected instance, as enforced by the API.
 
 The default timeout is 30 seconds. Requests are **not automatically retried**, including after a timeout: an SMS or WhatsApp send may already have been accepted. Inspect status before deciding whether to resend. HTTP failures, non-JSON responses, timeouts and network failures raise `WeezyError`; input/configuration errors raise the language's normal validation exception. HTTP redirect following is disabled.
 

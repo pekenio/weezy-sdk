@@ -5,4 +5,6 @@ const client = new Weezy({
   clientSecret: process.env.WEEZY_CLIENT_SECRET,
   baseUrl: process.env.WEEZY_BASE_URL,
 });
-console.log(await client.sms.balance());
+const wallet = await client.sms.balance();
+// Amounts are in points (1 point = 1 EUR, up to 3 decimals).
+console.log(`Balance: ${wallet.balance} ${wallet.unit}s (spent ${wallet.total_spent}, topped up ${wallet.total_topped_up})`);
