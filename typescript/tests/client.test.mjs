@@ -18,19 +18,12 @@ test('SMS sends Basic authentication and returns unwrapped message', async () =>
   assert.equal(message.cost, 0.054);
   assert.equal(message.unit, 'point');
 });
-test('WhatsApp preserves provider response and encodes instance IDs', async () => {
-  const client = new Weezy({ ...credentials, fetch: async (url) => {
-    assert.match(url, /\/session%2Fa\/messages\/text$/);
-    return json({ status: true, message: 'sent', provider_field: 4 });
-  } });
-  assert.deepEqual(await client.whatsapp('session/a').messages.sendTextMessage({ phone: '2250700000000', message: 'Bonjour' }), { status: true, message: 'sent', provider_field: 4 });
-});
 test('GET path parameters encoded; query parameters serialized', async () => {
   const urls = [];
   const client = new Weezy({ ...credentials, baseUrl: 'http://localhost:8000/client/api/v1/', fetch: async (url) => { urls.push(url); return json({ code: 200, msg: 'ok', data: {} }); } });
   await client.sms.status({ message_x_id: 'a/b' });
   assert.match(urls[0], /\/sms\/status\/a%2Fb$/);
-  assert.throws(() => client.whatsapp('..'), TypeError);
+  await assert.rejects(client.sms.status({ message_x_id: '..' }), TypeError);
 });
 test('HTTP errors carry status, details and request ID, without retrying sends', async () => {
   let calls = 0;
@@ -67,12 +60,18 @@ test('SMS balance returns amounts in points', async () => {
   assert.equal(wallet.unit, 'point');
 });
 
-test('disabled WhatsApp access preserves API detail and never retries', async () => {
+test('HTTP 404 preserves API detail and never retries', async () => {
   let calls = 0;
   const client = new Weezy({ ...credentials, fetch: async () => {
-    calls++; return json({ detail: 'WhatsApp access unavailable' }, 404);
+    calls++; return json({ detail: 'Resource unavailable' }, 404);
   } });
-  await assert.rejects(client.whatsapp('fixture').messages.sendTextMessage({ phone: '2250700000000', message: 'test' }),
-    error => error instanceof WeezyError && error.status === 404 && error.message === 'WhatsApp access unavailable' && error.requestId === 'request-test');
+  await assert.rejects(client.sms.status({ message_x_id: 'missing' }),
+    error => error instanceof WeezyError && error.status === 404 && error.message === 'Resource unavailable' && error.requestId === 'request-test');
   assert.equal(calls, 1);
+});
+
+test('client exposes exactly the six SMS operations', () => {
+  const client = new Weezy(credentials);
+  assert.deepEqual(Object.keys(client), ['sms']);
+  assert.deepEqual(Object.keys(client.sms).sort(), ['balance', 'optOuts', 'send', 'sendBulk', 'senders', 'status']);
 });

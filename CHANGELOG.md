@@ -1,10 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+**Breaking:** SDKs now exclusively expose the six public SMS operations. Legacy non-SMS resources, types and examples are no longer included. SMS authentication, amounts and error handling are unchanged.
+
 ## 0.2.1
 
-- Document default-off, administrator-controlled WhatsApp access per customer; preserve existing WhatsApp methods for enabled accounts.
 - Surface string `detail` messages from FastAPI HTTP errors in both SDKs, preserving status, response details and request ID without retries.
-- Regenerate and verify the unchanged public contract (126 operations); dashboard OAuth and account access management remain outside the SDK.
+- Regenerate and verify the public contract; dashboard OAuth and account access management remain outside the SDK.
 
 ## 0.2.0
 
@@ -16,7 +19,6 @@
 
 ## 0.1.0
 
-- Public SMS and WhatsApp API clients covering 126 operations.
 - JavaScript/TypeScript support for Node.js 20+, ESM and CommonJS.
 - Python 3.11+ synchronous and asynchronous clients with typed contracts.
 - Basic authentication, configurable timeout and structured request errors.

@@ -8,11 +8,8 @@ from fastapi.routing import APIRoute
 root = Path(__file__).resolve().parents[1]
 backend = root.parent / 'weezy-api-python/api/backend/app/client/api/v1'
 app = FastAPI()
-for file in sorted(backend.glob('*.py')):
-    if file.stem in {'__init__', 'webhooks'}:
-        continue
-    module = importlib.import_module(f'backend.app.client.api.v1.{file.stem}')
-    app.include_router(module.router)
+module = importlib.import_module('backend.app.client.api.v1.sms')
+app.include_router(module.router)
 schema = app.openapi()
 for route in app.routes:
     if isinstance(route, APIRoute) and route.path in schema['paths']:
@@ -45,5 +42,21 @@ for name in ('SmsMessageOut', 'SmsBatchOut', 'WalletOut'):
     schemas[name]['properties']['unit'] = dict(unit)
     if 'unit' not in schemas[name]['required']:
         schemas[name]['required'].append('unit')
+# Keep only schemas reachable from SMS operations and explicit response contracts.
+needed = {'SmsMessageOut', 'SmsBulkSendOut', 'WalletOut'}
+def collect(value):
+    if isinstance(value, dict):
+        if '$ref' in value:
+            needed.add(value['$ref'].rsplit('/', 1)[-1])
+        for item in value.values(): collect(item)
+    elif isinstance(value, list):
+        for item in value: collect(item)
+collect(schema['paths'])
+visited = set()
+while needed - visited:
+    name = sorted(needed - visited)[0]
+    visited.add(name)
+    collect(schemas[name])
+schema['components']['schemas'] = {name: value for name, value in schemas.items() if name in needed}
 (root / 'openapi.json').write_text(json.dumps(schema, ensure_ascii=False, indent=2) + '\n')
 print(f'Exported {len(schema["paths"])} public paths')

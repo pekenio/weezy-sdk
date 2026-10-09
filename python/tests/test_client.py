@@ -15,13 +15,6 @@ class ClientTest(unittest.TestCase):
         with Weezy(**OPTIONS, transport=httpx.MockTransport(handler)) as client:
             self.assertEqual(client.sms.send(body={"to": "+2250700000000", "body": "Bonjour", "sender_name": "WEEZY"})['x_id'], "fixture")
 
-    def test_whatsapp_provider_response_and_encoded_instance(self):
-        def handler(request):
-            self.assertIn(b"/session%2Fa/messages/text", request.url.raw_path)
-            return httpx.Response(200, json={"status": True, "provider_field": 4})
-        with Weezy(**OPTIONS, transport=httpx.MockTransport(handler)) as client:
-            self.assertEqual(client.whatsapp("session/a").messages.send_text_message(body={"phone": "2250700000000", "message": "Bonjour"})['provider_field'], 4)
-
     def test_http_errors_are_not_retried(self):
         calls = []
         def handler(request):
@@ -33,17 +26,24 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(caught.exception.request_id, "fixture-request")
         self.assertEqual(len(calls), 1)
 
-    def test_disabled_whatsapp_access_detail_without_retry(self):
+    def test_missing_resource_detail_without_retry(self):
         calls = []
         def handler(request):
             calls.append(request)
-            return httpx.Response(404, headers={"x-request-id": "disabled-test"}, json={"detail": "WhatsApp access unavailable"})
+            return httpx.Response(404, headers={"x-request-id": "disabled-test"}, json={"detail": "Resource unavailable"})
         with Weezy(**OPTIONS, transport=httpx.MockTransport(handler)) as client:
-            with self.assertRaisesRegex(WeezyError, "WhatsApp access unavailable") as caught:
-                client.whatsapp("fixture").messages.send_text_message(body={"phone": "2250700000000", "message": "test"})
+            with self.assertRaisesRegex(WeezyError, "Resource unavailable") as caught:
+                client.sms.status(message_x_id="missing")
         self.assertEqual(caught.exception.status, 404)
         self.assertEqual(caught.exception.request_id, "disabled-test")
         self.assertEqual(len(calls), 1)
+
+    def test_sms_only_public_resources(self):
+        with Weezy(**OPTIONS) as client:
+            resources = [name for name in vars(client) if not name.startswith("_")]
+            self.assertEqual(resources, ["sms"])
+            methods = [name for name in vars(type(client.sms)) if not name.startswith("_")]
+            self.assertEqual(sorted(methods), ["balance", "opt_outs", "send", "send_bulk", "senders", "status"])
 
     def test_timeout(self):
         def handler(request): raise httpx.ReadTimeout("timeout", request=request)
@@ -68,11 +68,10 @@ class ClientTest(unittest.TestCase):
         for url in ("file:///tmp", "https://key:secret@example.com", "https://example.com?q=test"):
             with self.assertRaises(ValueError): Weezy(**OPTIONS, base_url=url)
         with Weezy(**OPTIONS) as client:
-            with self.assertRaises(ValueError): client.whatsapp("..")
             with self.assertRaises(ValueError): client.sms.status(message_x_id="..")
 
 class AsyncClientTest(unittest.IsolatedAsyncioTestCase):
-    async def test_async_sms_and_whatsapp(self):
+    async def test_async_sms(self):
         async def handler(request):
             if request.url.path.endswith('/sms/balance'): return httpx.Response(200, json={"code": 200, "msg": "ok", "data": {"currency": "EUR", "balance": 5.0, "total_topped_up": 10.0, "total_spent": 4.973, "unit": "point"}})
             return httpx.Response(200, json={"status": True})
@@ -81,4 +80,3 @@ class AsyncClientTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(wallet["balance"], 5.0)
             self.assertEqual(wallet["total_spent"], 4.973)
             self.assertEqual(wallet["unit"], "point")
-            self.assertTrue((await client.whatsapp("fixture").messages.send_text_message(body={"phone": "2250700000000", "message": "Bonjour"}))['status'])

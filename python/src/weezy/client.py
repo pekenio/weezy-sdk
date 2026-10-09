@@ -1,7 +1,7 @@
 from typing import Any
 import httpx
-from ._transport import WeezyError, decode, segment, validate
-from .resources import SmsAPI, AsyncSmsAPI, WhatsAppAPI, AsyncWhatsAppAPI
+from ._transport import WeezyError, decode, validate
+from .resources import SmsAPI, AsyncSmsAPI
 
 DEFAULT_BASE_URL = "https://api.weezy.app/client/api/v1"
 
@@ -13,10 +13,6 @@ class Weezy:
         self._http = httpx.Client(auth=(client_id, client_secret), timeout=timeout, transport=transport,
                                   headers={"Accept": "application/json"}, follow_redirects=False)
         self.sms = SmsAPI(self)
-
-    def whatsapp(self, instance_id: str) -> WhatsAppAPI:
-        segment(instance_id)
-        return WhatsAppAPI(self, instance_id)
 
     def request(self, method: str, path: str, *, body: Any = None, query: dict | None = None, unwrap: bool = False) -> Any:
         try:
@@ -45,10 +41,6 @@ class AsyncWeezy:
         self._http = httpx.AsyncClient(auth=(client_id, client_secret), timeout=timeout, transport=transport,
                                        headers={"Accept": "application/json"}, follow_redirects=False)
         self.sms = AsyncSmsAPI(self)
-
-    def whatsapp(self, instance_id: str) -> AsyncWhatsAppAPI:
-        segment(instance_id)
-        return AsyncWhatsAppAPI(self, instance_id)
 
     async def request(self, method: str, path: str, *, body: Any = None, query: dict | None = None, unwrap: bool = False) -> Any:
         try:

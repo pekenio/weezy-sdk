@@ -39,12 +39,14 @@ for name,schema in schemas.items():
 groups=defaultdict(list)
 alias={'get_balance':'balance','client_sms_list_senders':'senders','send_sms':'send','send_bulk':'send_bulk','get_status':'status','client_sms_add_opt_outs':'opt_outs'}
 for path,methods in spec['paths'].items():
-    group = path.split('/')[2] if path.startswith('/{instance_id}') else 'sms'
+    if not path.startswith('/sms/'):
+        raise ValueError('Only SMS routes are supported')
+    group = 'sms'
     for method,op in methods.items():
         if method not in {'get','post','put','patch','delete'}: continue
         name=alias.get(op['x-sdk-method'],op['x-sdk-method'])
         if keyword.iskeyword(name): name += '_'
-        params=[p for p in op.get('parameters',[]) if p['in'] in ('path','query') and p['name']!='instance_id']
+        params=[p for p in op.get('parameters',[]) if p['in'] in ('path','query')]
         body=op.get('requestBody',{}).get('content',{}).get('application/json',{}).get('schema')
         output=op.get('responses',{}).get('200',{}).get('content',{}).get('application/json',{}).get('schema',{})
         if group=='sms': output={'$ref':'#/components/schemas/'+{'send':'SmsMessageOut','status':'SmsMessageOut','send_bulk':'SmsBulkSendOut','balance':'WalletOut'}.get(name,'')} if name in {'send','status','send_bulk','balance'} else {'type':'object'}
@@ -67,26 +69,21 @@ for group,ops in groups.items():
         manifest[group][jsname]={k:op[k] for k in ('method','path')}
         manifest[group][jsname].update(body=bool(op['body']),params=[{'name':p['name'],'in':p['in']} for p in op['params']],unwrap=group=='sms')
     ts_resources+='}\n'
-ts_resources+='export interface WhatsAppAPI {\n'+''.join(f'  {g}: {g.capitalize()}API;\n' for g in groups if g!='sms')+'}\n'
 ts_resources+='export const operations = '+json.dumps(manifest,indent=2)+' as const;\n'
 py_resources='"""Generated resource methods."""\nfrom __future__ import annotations\nfrom typing import Any, Dict, List, Literal, Union\nfrom ._transport import segment\nfrom .types import *\n\n'
 for async_ in (False,True):
     prefix='Async' if async_ else ''
     for group,ops in groups.items():
-        title=prefix+group.capitalize()+'API';py_resources+=f'class {title}:\n    def __init__(self, client, instance_id=None):\n        self._client = client\n        self._instance_id = instance_id\n\n'
+        title=prefix+group.capitalize()+'API';py_resources+=f'class {title}:\n    def __init__(self, client):\n        self._client = client\n\n'
         for op in ops:
             args=[]
             if op['body']: args.append('body: '+py(op['body']))
             for p in op['params']: args.append(p['name']+': '+py(p.get('schema',{}))+('' if p.get('required') else ' = None'))
             path=op['path']
-            for param in re.findall(r'\{(\w+)\}',path): path=path.replace('{'+param+'}', '{segment('+('self._instance_id' if param=='instance_id' else param)+')}')
+            for param in re.findall(r'\{(\w+)\}',path): path=path.replace('{'+param+'}', '{segment('+param+')}')
             query='{'+', '.join(repr(p['name'])+': '+p['name'] for p in op['params'] if p['in']=='query')+'}'
             signature='self'+(', *, '+', '.join(args) if args else '')
             py_resources+=f'    {"async " if async_ else ""}def {op["name"]}({signature}) -> {py(op["output"])}:\n        """{op["summary"]}."""\n        return {"await " if async_ else ""}self._client.request({op["method"]!r}, f\'{path}\', body={"body" if op["body"] else "None"}, query={query}, unwrap={group=="sms"})\n\n'
-    py_resources+=f'class {prefix}WhatsAppAPI:\n    def __init__(self, client, instance_id):\n'
-    for group in groups:
-        if group!='sms': py_resources+=f'        self.{group} = {prefix}{group.capitalize()}API(client, instance_id)\n'
-    py_resources+='\n'
 (root/'typescript/src/types.ts').write_text(ts_types)
 (root/'typescript/src/resources.ts').write_text(ts_resources)
 (root/'python/src/weezy/types.py').write_text(py_types)
@@ -97,8 +94,8 @@ reference = "# Public API methods\n\nGenerated from the backend routes. Base URL
 for group, ops in groups.items():
     reference += f"## {group}\n\n| JavaScript / TypeScript | Python | HTTP | Route |\n| --- | --- | --- | --- |\n"
     for op in ops:
-        prefix = "sms" if group == "sms" else f"whatsapp(instanceId).{group}"
-        pyprefix = "sms" if group == "sms" else f"whatsapp(instance_id).{group}"
+        prefix = "sms"
+        pyprefix = "sms"
         reference += f"| `{prefix}.{camel(op['name'])}` | `{pyprefix}.{op['name']}` | {op['method']} | `{op['path']}` |\n"
     reference += "\n"
 for target in (root / "API.md", root / "typescript/API.md", root / "python/API.md"):

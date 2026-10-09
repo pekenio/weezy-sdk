@@ -1,4 +1,4 @@
-import { operations, type SmsAPI, type WhatsAppAPI } from "./resources.js";
+import { operations, type SmsAPI } from "./resources.js";
 export type * from "./resources.js";
 export type * from "./types.js";
 
@@ -29,20 +29,15 @@ export class Weezy {
     this.#fetcher = options.fetch ?? globalThis.fetch;
     this.sms = this.resource(operations.sms) as unknown as SmsAPI;
   }
-  whatsapp(instanceId: string): WhatsAppAPI {
-    this.segment(instanceId);
-    return Object.fromEntries(Object.entries(operations).filter(([group]) => group !== "sms")
-      .map(([group, methods]) => [group, this.resource(methods, instanceId)])) as unknown as WhatsAppAPI;
-  }
   private segment(value: unknown): string {
     if (value === undefined || value === null || String(value) === "" || [".", ".."].includes(String(value))) throw new TypeError("A valid path parameter is required");
     return encodeURIComponent(String(value));
   }
-  private resource(methods: Record<string, Operation>, instanceId?: string) {
+  private resource(methods: Record<string, Operation>) {
     return Object.fromEntries(Object.entries(methods).map(([name, op]) => [name, async (...args: unknown[]) => {
       const params = (args[op.body ? 1 : 0] ?? {}) as Record<string, unknown>;
       const query = new URLSearchParams();
-      let path = op.path.replace("{instance_id}", instanceId ? this.segment(instanceId) : "");
+      let path = op.path;
       for (const param of op.params) {
         const value = params[param.name];
         if (param.in === "path") path = path.replace(`{${param.name}}`, this.segment(value));

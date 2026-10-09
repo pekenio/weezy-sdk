@@ -1,7 +1,7 @@
 {
   "name": "@weezy-app/sdk",
-  "version": "0.2.1",
-  "description": "Weezy SMS and WhatsApp SDK for Node.js and TypeScript",
+  "version": "0.3.0",
+  "description": "Weezy SMS SDK for Node.js and TypeScript",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "types": "./dist/esm/index.d.ts",

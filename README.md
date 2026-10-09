@@ -1,6 +1,6 @@
-# Weezy SDKs — 0.2.1
+# Weezy SDKs — 0.3.0
 
-SDKs for the **public client API**, covering SMS and WhatsApp. The generated resources cover 126 operations across 124 paths. Dashboard, administration and webhook receiver routes are excluded.
+SDKs for the **public client API**, covering SMS. The generated resources cover 6 operations across 6 paths. Dashboard, administration and webhook receiver routes are excluded.
 
 - [JavaScript / TypeScript](typescript/README.md): Node.js 20+, ESM and CommonJS, generated request/result types.
 - [Python](python/README.md): Python 3.11+, synchronous `Weezy` and asynchronous `AsyncWeezy`, TypedDict contracts and `py.typed`.
@@ -24,11 +24,11 @@ Both channels use HTTP Basic authentication with the **client ID and client secr
 
 The default base URL is `https://api.weezy.app/client/api/v1`. For local development use `http://localhost:8000/client/api/v1`. The configured URL must include the full client API prefix.
 
-SMS responses are unwrapped from `{code, msg, data}`. WhatsApp responses preserve the provider payload and extra fields. Monetary amounts are in **points**, returned as JSON numbers with up to 3 decimals (for example `"cost": 0.027`, `"balance": 12.45`) and `"unit": "point"` on the object. 1 point = 1 EUR. This applies to the SMS balance (`balance`, `total_topped_up`, `total_spent`, `low_balance_threshold`), messages (`unit_price`, `cost`), bulk batches (`amount_reserved`, `amount_refunded`) and SMS webhook events (`cost`, `refunded`). Before 0.2.0 these amounts were integers in EUR cents; see the [changelog](CHANGELOG.md). Sending requires the account's available balance or WhatsApp subscription and connected instance, as enforced by the API.
+SMS responses are unwrapped from `{code, msg, data}`. Monetary amounts are in **points**, returned as JSON numbers with up to 3 decimals (for example `"cost": 0.027`, `"balance": 12.45`) and `"unit": "point"` on the object. 1 point = 1 EUR. This applies to the SMS balance (`balance`, `total_topped_up`, `total_spent`, `low_balance_threshold`), messages (`unit_price`, `cost`), bulk batches (`amount_reserved`, `amount_refunded`) and SMS webhook events (`cost`, `refunded`). Before 0.2.0 these amounts were integers in EUR cents; see the [changelog](CHANGELOG.md). Sending requires the account's available balance, as enforced by the API.
 
-The default timeout is 30 seconds. Requests are **not automatically retried**, including after a timeout: an SMS or WhatsApp send may already have been accepted. Inspect status before deciding whether to resend. HTTP failures, non-JSON responses, timeouts and network failures raise `WeezyError`; input/configuration errors raise the language's normal validation exception. HTTP redirect following is disabled.
+The default timeout is 30 seconds. Requests are **not automatically retried**, including after a timeout: an SMS send may already have been accepted. Inspect status before deciding whether to resend. HTTP failures, non-JSON responses, timeouts and network failures raise `WeezyError`; input/configuration errors raise the language's normal validation exception. HTTP redirect following is disabled.
 
-Generated types describe the contract; input validation remains on the API. SDKs do not manage WhatsApp instance creation or connection through dashboard routes. Webhook signature verification is not included in this version.
+Generated types describe the contract; input validation remains on the API. Webhook signature verification is not included in this version.
 
 ## Regenerate contracts
 
@@ -58,9 +58,3 @@ weezy-api-python/api/.venv/bin/python -m pip wheel --no-deps ./weezy-sdk/python 
 ```
 
 Tests use mocked transports: no messages are sent, no balances are debited, and no provider is contacted. Publishing and a live sandbox smoke test remain separate release steps.
-
-## WhatsApp account access
-
-WhatsApp is disabled by default for every customer account. An administrator must enable it for that customer before WhatsApp API credentials and methods can be used. Existing credentials do not bypass this account setting. The API returns HTTP 404 when WhatsApp access is unavailable; a 404 can also mean a missing resource. The SDK preserves this error and does not retry or enable access. SMS access is independent. Enabled accounts still need valid credential scopes, a subscription and a connected instance.
-
-The SDK only covers the public client API: account activation and Google OAuth login belong to the dashboard and are not SDK methods.
