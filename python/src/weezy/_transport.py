@@ -38,6 +38,6 @@ def decode(response: httpx.Response, *, unwrap: bool) -> Any:
                          request_id=response.headers.get("x-request-id")) from None
     envelope = isinstance(data, dict) and isinstance(data.get("code"), int) and "msg" in data
     if response.is_error or response.is_redirect or (unwrap and envelope and data['code'] >= 400):
-        raise WeezyError(data.get("msg", f"API request failed ({response.status_code})") if isinstance(data, dict) else f"API request failed ({response.status_code})",
+        raise WeezyError((data.get("msg") or (data.get("detail") if isinstance(data.get("detail"), str) else None) or f"API request failed ({response.status_code})") if isinstance(data, dict) else f"API request failed ({response.status_code})",
                          status=response.status_code, details=data, request_id=response.headers.get("x-request-id"))
     return data.get("data") if unwrap and envelope else data

@@ -68,7 +68,7 @@ export class Weezy {
       catch { throw new WeezyError("API returned a non-JSON response", response.status, text, response.headers.get("x-request-id")); }
       const envelope = data as { code?: number; msg?: string; detail?: unknown; data?: unknown } | null;
       if (!response.ok || (unwrap && typeof envelope?.code === "number" && envelope.code >= 400)) {
-        throw new WeezyError(envelope?.msg ?? `API request failed (${response.status})`, response.status, data, response.headers.get("x-request-id"));
+        throw new WeezyError(envelope?.msg ?? (typeof envelope?.detail === "string" ? envelope.detail : `API request failed (${response.status})`), response.status, data, response.headers.get("x-request-id"));
       }
       return unwrap && envelope && typeof envelope.code === "number" && "msg" in envelope ? envelope.data : data;
     } catch (error) {

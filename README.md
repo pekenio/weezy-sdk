@@ -1,4 +1,4 @@
-# Weezy SDKs — 0.2.0
+# Weezy SDKs — 0.2.1
 
 SDKs for the **public client API**, covering SMS and WhatsApp. The generated resources cover 126 operations across 124 paths. Dashboard, administration and webhook receiver routes are excluded.
 
@@ -58,3 +58,9 @@ weezy-api-python/api/.venv/bin/python -m pip wheel --no-deps ./weezy-sdk/python 
 ```
 
 Tests use mocked transports: no messages are sent, no balances are debited, and no provider is contacted. Publishing and a live sandbox smoke test remain separate release steps.
+
+## WhatsApp account access
+
+WhatsApp is disabled by default for every customer account. An administrator must enable it for that customer before WhatsApp API credentials and methods can be used. Existing credentials do not bypass this account setting. The API returns HTTP 404 when WhatsApp access is unavailable; a 404 can also mean a missing resource. The SDK preserves this error and does not retry or enable access. SMS access is independent. Enabled accounts still need valid credential scopes, a subscription and a connected instance.
+
+The SDK only covers the public client API: account activation and Google OAuth login belong to the dashboard and are not SDK methods.

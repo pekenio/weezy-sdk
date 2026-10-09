@@ -33,6 +33,18 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(caught.exception.request_id, "fixture-request")
         self.assertEqual(len(calls), 1)
 
+    def test_disabled_whatsapp_access_detail_without_retry(self):
+        calls = []
+        def handler(request):
+            calls.append(request)
+            return httpx.Response(404, headers={"x-request-id": "disabled-test"}, json={"detail": "WhatsApp access unavailable"})
+        with Weezy(**OPTIONS, transport=httpx.MockTransport(handler)) as client:
+            with self.assertRaisesRegex(WeezyError, "WhatsApp access unavailable") as caught:
+                client.whatsapp("fixture").messages.send_text_message(body={"phone": "2250700000000", "message": "test"})
+        self.assertEqual(caught.exception.status, 404)
+        self.assertEqual(caught.exception.request_id, "disabled-test")
+        self.assertEqual(len(calls), 1)
+
     def test_timeout(self):
         def handler(request): raise httpx.ReadTimeout("timeout", request=request)
         with Weezy(**OPTIONS, transport=httpx.MockTransport(handler)) as client:

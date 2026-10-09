@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- Document default-off, administrator-controlled WhatsApp access per customer; preserve existing WhatsApp methods for enabled accounts.
+- Surface string `detail` messages from FastAPI HTTP errors in both SDKs, preserving status, response details and request ID without retries.
+- Regenerate and verify the unchanged public contract (126 operations); dashboard OAuth and account access management remain outside the SDK.
+
 ## 0.2.0
 
 **Breaking:** SMS monetary amounts are now **points** (1 point = 1 EUR), returned as JSON numbers with up to 3 decimals, instead of integer EUR cents.

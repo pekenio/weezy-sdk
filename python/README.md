@@ -61,3 +61,9 @@ SMS methods: `balance()`, `senders()`, `send(body=...)`, `send_bulk(body=...)`, 
 SMS amounts (`balance`, `cost`, `unit_price`, `amount_reserved`, ...) are `float` values in **points** (1 point = 1 EUR, up to 3 decimals), with `unit == 'point'` on the object.
 
 TypedDict request and response contracts are exported from `weezy.types`. They support editor/type-checker assistance; runtime validation remains on the API.
+
+## WhatsApp account access
+
+WhatsApp is disabled by default for every customer account. An administrator must enable it for that customer before WhatsApp API credentials and methods can be used. Existing credentials do not bypass this account setting. The API returns HTTP 404 when WhatsApp access is unavailable; a 404 can also mean a missing resource. The SDK preserves this error and does not retry or enable access. SMS access is independent. Enabled accounts still need valid credential scopes, a subscription and a connected instance.
+
+The SDK only covers the public client API: account activation and Google OAuth login belong to the dashboard and are not SDK methods.

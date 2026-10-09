@@ -66,3 +66,13 @@ test('SMS balance returns amounts in points', async () => {
   assert.equal(wallet.low_balance_threshold, 1.5);
   assert.equal(wallet.unit, 'point');
 });
+
+test('disabled WhatsApp access preserves API detail and never retries', async () => {
+  let calls = 0;
+  const client = new Weezy({ ...credentials, fetch: async () => {
+    calls++; return json({ detail: 'WhatsApp access unavailable' }, 404);
+  } });
+  await assert.rejects(client.whatsapp('fixture').messages.sendTextMessage({ phone: '2250700000000', message: 'test' }),
+    error => error instanceof WeezyError && error.status === 404 && error.message === 'WhatsApp access unavailable' && error.requestId === 'request-test');
+  assert.equal(calls, 1);
+});
