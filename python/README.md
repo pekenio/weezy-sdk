@@ -23,7 +23,7 @@ with Weezy(
     client_secret=os.environ['WEEZY_CLIENT_SECRET'],
 ) as client:
     wallet = client.sms.balance()
-    print(f"Balance: {wallet['balance']:.3f} points")  # 1 point = 1 EUR
+    print(f"Balance: {wallet['balance']:.3f} points")  # 1 point = 1 XOF (FCFA)
     message = client.sms.send(body={
         'to': '+2250700000000', 'body': 'Bonjour !', 'sender_name': 'WEEZY',
     })
@@ -55,6 +55,6 @@ SMS methods: `balance()`, `senders()`, `send(body=...)`, `send_bulk(body=...)`, 
 
 `WeezyError` exposes `status`, `details` and `request_id`. A timeout or transport failure has status `0`. Close clients with `close()` / `await aclose()` or use the context managers above. Options include `base_url` (full client API prefix), `timeout` in seconds and an injectable `httpx` transport. No automatic retries.
 
-SMS amounts (`balance`, `cost`, `unit_price`, `amount_reserved`, ...) are `float` values in **points** (1 point = 1 EUR, up to 3 decimals), with `unit == 'point'` on the object.
+SMS amounts (`balance`, `cost`, `unit_price`, `amount_reserved`, ...) are `float` values in **points** (1 point = 1 XOF (FCFA), up to 3 decimals), with `unit == 'point'` on the object.
 
 TypedDict request and response contracts are exported from `weezy.types`. They support editor/type-checker assistance; runtime validation remains on the API.

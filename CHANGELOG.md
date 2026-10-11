@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+Wallet denomination changes to XOF (FCFA): 1 token = 1 FCFA. Numeric token balances and SMS rates remain unchanged; API amounts remain decimal points with `unit: "point"`. Historical payments retain their original currency.
+
 ## 0.3.0
 
 **Breaking:** SDKs now exclusively expose the six public SMS operations. Legacy non-SMS resources, types and examples are no longer included. SMS authentication, amounts and error handling are unchanged.

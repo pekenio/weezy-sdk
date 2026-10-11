@@ -11,7 +11,7 @@ async def main():
         options['base_url'] = os.environ['WEEZY_BASE_URL']
     async with AsyncWeezy(**options) as client:
         wallet = await client.sms.balance()
-        # Amounts are in points (1 point = 1 EUR, up to 3 decimals).
+        # Amounts are in points (1 point = 1 XOF (FCFA), up to 3 decimals).
         print(f"Balance: {wallet['balance']} {wallet['unit']}s "
               f"(spent {wallet['total_spent']}, topped up {wallet['total_topped_up']})")
 

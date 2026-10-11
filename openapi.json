@@ -475,12 +475,12 @@
           "unit_price": {
             "title": "Unit Price",
             "type": "number",
-            "description": "Price in points (1 point = 1 EUR, up to 3 decimals)"
+            "description": "Price in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
           },
           "cost": {
             "title": "Cost",
             "type": "number",
-            "description": "Price in points (1 point = 1 EUR, up to 3 decimals)"
+            "description": "Price in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
           },
           "status": {
             "title": "Status",
@@ -555,7 +555,7 @@
             "default": "point",
             "title": "Unit",
             "type": "string",
-            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 EUR)."
+            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 XOF (FCFA))."
           }
         },
         "required": [
@@ -617,12 +617,12 @@
           "amount_reserved": {
             "title": "Amount Reserved",
             "type": "number",
-            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
+            "description": "Amount in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
           },
           "amount_refunded": {
             "title": "Amount Refunded",
             "type": "number",
-            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
+            "description": "Amount in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
           },
           "created_time": {
             "format": "date-time",
@@ -647,7 +647,7 @@
             "default": "point",
             "title": "Unit",
             "type": "string",
-            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 EUR)."
+            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 XOF (FCFA))."
           }
         },
         "required": [
@@ -696,17 +696,17 @@
           "balance": {
             "title": "Balance",
             "type": "number",
-            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
+            "description": "Amount in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
           },
           "total_topped_up": {
             "title": "Total Topped Up",
             "type": "number",
-            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
+            "description": "Amount in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
           },
           "total_spent": {
             "title": "Total Spent",
             "type": "number",
-            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
+            "description": "Amount in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
           },
           "display_currency": {
             "anyOf": [
@@ -731,14 +731,14 @@
             ],
             "default": null,
             "title": "Low Balance Threshold",
-            "description": "Amount in points (1 point = 1 EUR, up to 3 decimals)"
+            "description": "Amount in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
           },
           "unit": {
             "const": "point",
             "default": "point",
             "title": "Unit",
             "type": "string",
-            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 EUR)."
+            "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 XOF (FCFA))."
           }
         },
         "required": [

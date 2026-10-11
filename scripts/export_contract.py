@@ -22,13 +22,13 @@ for model in (SmsMessageOut, SmsBulkSendOut, WalletOut):
     result = model.model_json_schema(ref_template='#/components/schemas/{model}')
     schema['components']['schemas'].update(result.pop('$defs', {}))
     schema['components']['schemas'][model.__name__] = result
-# L'API developpeur renvoie les montants en points decimaux (1 point = 1 EUR) avec unit="point",
+# L'API developpeur renvoie les montants en points decimaux (1 point = 1 XOF (FCFA)) avec unit="point",
 # alors que ces schemas internes sont en milli-points entiers : on ajuste le contrat public.
 schemas = schema['components']['schemas']
-price = "Price in points (1 point = 1 EUR, up to 3 decimals)"
-amount = "Amount in points (1 point = 1 EUR, up to 3 decimals)"
+price = "Price in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
+amount = "Amount in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
 unit = {"const": "point", "default": "point", "title": "Unit", "type": "string",
-        "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 EUR)."}
+        "description": "Monetary unit of the amounts in this object: always \"point\" (1 point = 1 XOF (FCFA))."}
 for field in ('unit_price', 'cost'):
     schemas['SmsMessageOut']['properties'][field].update(type='number', description=price)
 for field in ('amount_reserved', 'amount_refunded'):
