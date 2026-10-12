@@ -1,6 +1,6 @@
-# Weezy SDKs — 0.3.0
+# Weezy SDKs — 0.4.0
 
-SDKs for the **public client API**, covering SMS. The generated resources cover 6 operations across 6 paths. Dashboard, administration and webhook receiver routes are excluded.
+SDKs for the **public client API**, covering SMS. The generated resources cover 8 operations across 8 paths. Dashboard, administration and webhook receiver routes are excluded.
 
 - [JavaScript / TypeScript](typescript/README.md): Node.js 20+, ESM and CommonJS, generated request/result types.
 - [Python](python/README.md): Python 3.11+, synchronous `Weezy` and asynchronous `AsyncWeezy`, TypedDict contracts and `py.typed`.
@@ -58,3 +58,7 @@ weezy-api-python/api/.venv/bin/python -m pip wheel --no-deps ./weezy-sdk/python 
 ```
 
 Tests use mocked transports: no messages are sent, no balances are debited, and no provider is contacted. Publishing and a live sandbox smoke test remain separate release steps.
+
+## Sandbox
+
+Set `sandbox: true` (Python: `True`) in the body for SMS send, bulk send or managed OTP creation. Authentication and country/sender checks still apply, but simulated sends do not contact the provider, debit the wallet or consume free segments. Use `sender_name: "DEFAULT"` for the enabled platform sender. See the language READMEs for examples. Version 0.4.0 includes the current sandbox and managed OTP contracts.

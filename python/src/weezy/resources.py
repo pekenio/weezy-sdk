@@ -17,11 +17,11 @@ class SmsAPI:
         return self._client.request('GET', f'/sms/senders', body=None, query={}, unwrap=True)
 
     def send(self, *, body: 'SmsSendIn') -> 'SmsMessageOut':
-        """Send one SMS."""
+        """Queue one SMS for asynchronous delivery."""
         return self._client.request('POST', f'/sms/send', body=body, query={}, unwrap=True)
 
     def send_bulk(self, *, body: 'SmsBulkSendIn') -> 'SmsBulkSendOut':
-        """Send the same SMS to many recipients."""
+        """Queue SMS for asynchronous delivery."""
         return self._client.request('POST', f'/sms/send-bulk', body=body, query={}, unwrap=True)
 
     def status(self, *, message_x_id: str) -> 'SmsMessageOut':
@@ -31,6 +31,14 @@ class SmsAPI:
     def opt_outs(self, *, body: 'SmsOptOutIn') -> Dict[str, Any]:
         """Unsubscribe numbers (excluded from all future sends)."""
         return self._client.request('POST', f'/sms/opt-outs', body=body, query={}, unwrap=True)
+
+    def create_otp(self, *, body: 'SmsOtpCreateIn') -> Dict[str, Any]:
+        """Create a managed OTP challenge; real sends are billed normally."""
+        return self._client.request('POST', f'/sms/otp', body=body, query={}, unwrap=True)
+
+    def verify_otp(self, *, body: 'SmsOtpVerifyIn', challenge_id: str) -> Dict[str, Any]:
+        """Verify a one-use OTP code."""
+        return self._client.request('POST', f'/sms/otp/{segment(challenge_id)}/verify', body=body, query={}, unwrap=True)
 
 class AsyncSmsAPI:
     def __init__(self, client):
@@ -45,11 +53,11 @@ class AsyncSmsAPI:
         return await self._client.request('GET', f'/sms/senders', body=None, query={}, unwrap=True)
 
     async def send(self, *, body: 'SmsSendIn') -> 'SmsMessageOut':
-        """Send one SMS."""
+        """Queue one SMS for asynchronous delivery."""
         return await self._client.request('POST', f'/sms/send', body=body, query={}, unwrap=True)
 
     async def send_bulk(self, *, body: 'SmsBulkSendIn') -> 'SmsBulkSendOut':
-        """Send the same SMS to many recipients."""
+        """Queue SMS for asynchronous delivery."""
         return await self._client.request('POST', f'/sms/send-bulk', body=body, query={}, unwrap=True)
 
     async def status(self, *, message_x_id: str) -> 'SmsMessageOut':
@@ -59,3 +67,11 @@ class AsyncSmsAPI:
     async def opt_outs(self, *, body: 'SmsOptOutIn') -> Dict[str, Any]:
         """Unsubscribe numbers (excluded from all future sends)."""
         return await self._client.request('POST', f'/sms/opt-outs', body=body, query={}, unwrap=True)
+
+    async def create_otp(self, *, body: 'SmsOtpCreateIn') -> Dict[str, Any]:
+        """Create a managed OTP challenge; real sends are billed normally."""
+        return await self._client.request('POST', f'/sms/otp', body=body, query={}, unwrap=True)
+
+    async def verify_otp(self, *, body: 'SmsOtpVerifyIn', challenge_id: str) -> Dict[str, Any]:
+        """Verify a one-use OTP code."""
+        return await self._client.request('POST', f'/sms/otp/{segment(challenge_id)}/verify', body=body, query={}, unwrap=True)

@@ -10,7 +10,15 @@ backend = root.parent / 'weezy-api-python/api/backend/app/client/api/v1'
 app = FastAPI()
 module = importlib.import_module('backend.app.client.api.v1.sms')
 app.include_router(module.router)
+# Annotate the source router: recent FastAPI versions include routers lazily.
+route_methods = {(route.path, method.lower()): route.endpoint.__name__
+                 for route in module.router.routes if isinstance(route, APIRoute)
+                 for method in route.methods}
 schema = app.openapi()
+for path, operations in schema["paths"].items():
+    for method, operation in operations.items():
+        if (path, method) in route_methods:
+            operation["x-sdk-method"] = route_methods[(path, method)]
 for route in app.routes:
     if isinstance(route, APIRoute) and route.path in schema['paths']:
         for method in route.methods:

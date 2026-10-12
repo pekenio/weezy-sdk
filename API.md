@@ -12,3 +12,5 @@ Generated from the backend routes. Base URL: `https://api.weezy.app/client/api/v
 | `sms.sendBulk` | `sms.send_bulk` | POST | `/sms/send-bulk` |
 | `sms.status` | `sms.status` | GET | `/sms/status/{message_x_id}` |
 | `sms.optOuts` | `sms.opt_outs` | POST | `/sms/opt-outs` |
+| `sms.createOtp` | `sms.create_otp` | POST | `/sms/otp` |
+| `sms.verifyOtp` | `sms.verify_otp` | POST | `/sms/otp/{challenge_id}/verify` |

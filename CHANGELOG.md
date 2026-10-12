@@ -1,3 +1,10 @@
+# 0.4.0
+
+- Regenerated public contracts for sandbox, priority and validity.
+- Added managed OTP creation and verification methods.
+- Updated DEFAULT sender and sandbox documentation with simulated examples.
+- Fixed route export compatibility with lazy FastAPI routers.
+
 # Changelog
 
 ## Unreleased

@@ -5,14 +5,18 @@ export interface SmsAPI {
   balance(): Promise<T.WalletOut>;
   /** Sender IDs available for sending */
   senders(): Promise<{ [key: string]: unknown }>;
-  /** Send one SMS */
+  /** Queue one SMS for asynchronous delivery */
   send(body: T.SmsSendIn): Promise<T.SmsMessageOut>;
-  /** Send the same SMS to many recipients */
+  /** Queue SMS for asynchronous delivery */
   sendBulk(body: T.SmsBulkSendIn): Promise<T.SmsBulkSendOut>;
   /** Get the delivery status of one SMS */
   status(params: { message_x_id: string }): Promise<T.SmsMessageOut>;
   /** Unsubscribe numbers (excluded from all future sends) */
   optOuts(body: T.SmsOptOutIn): Promise<{ [key: string]: unknown }>;
+  /** Create a managed OTP challenge; real sends are billed normally */
+  createOtp(body: T.SmsOtpCreateIn): Promise<{ [key: string]: unknown }>;
+  /** Verify a one-use OTP code */
+  verifyOtp(body: T.SmsOtpVerifyIn, params: { challenge_id: string }): Promise<{ [key: string]: unknown }>;
 }
 export const operations = {
   "sms": {
@@ -61,6 +65,25 @@ export const operations = {
       "path": "/sms/opt-outs",
       "body": true,
       "params": [],
+      "unwrap": true
+    },
+    "createOtp": {
+      "method": "POST",
+      "path": "/sms/otp",
+      "body": true,
+      "params": [],
+      "unwrap": true
+    },
+    "verifyOtp": {
+      "method": "POST",
+      "path": "/sms/otp/{challenge_id}/verify",
+      "body": true,
+      "params": [
+        {
+          "name": "challenge_id",
+          "in": "path"
+        }
+      ],
       "unwrap": true
     }
   }

@@ -64,7 +64,7 @@
         "tags": [
           "SMS"
         ],
-        "summary": "Send one SMS",
+        "summary": "Queue one SMS for asynchronous delivery",
         "operationId": "send_sms_sms_send_post",
         "requestBody": {
           "content": {
@@ -77,7 +77,7 @@
           "required": true
         },
         "responses": {
-          "200": {
+          "202": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -111,7 +111,7 @@
         "tags": [
           "SMS"
         ],
-        "summary": "Send the same SMS to many recipients",
+        "summary": "Queue SMS for asynchronous delivery",
         "operationId": "send_bulk_sms_send_bulk_post",
         "requestBody": {
           "content": {
@@ -124,7 +124,7 @@
           "required": true
         },
         "responses": {
-          "200": {
+          "202": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -248,6 +248,112 @@
         ],
         "x-sdk-method": "client_sms_add_opt_outs"
       }
+    },
+    "/sms/otp": {
+      "post": {
+        "tags": [
+          "SMS"
+        ],
+        "summary": "Create a managed OTP challenge; real sends are billed normally",
+        "operationId": "create_otp_sms_otp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsOtpCreateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "x-sdk-method": "create_otp"
+      }
+    },
+    "/sms/otp/{challenge_id}/verify": {
+      "post": {
+        "tags": [
+          "SMS"
+        ],
+        "summary": "Verify a one-use OTP code",
+        "operationId": "verify_otp_sms_otp__challenge_id__verify_post",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "challenge_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$",
+              "title": "Challenge Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsOtpVerifyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-sdk-method": "verify_otp"
+      }
     }
   },
   "components": {
@@ -293,6 +399,28 @@
       },
       "SmsBulkSendIn": {
         "properties": {
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high"
+            ],
+            "title": "Priority",
+            "default": "normal"
+          },
+          "validity_seconds": {
+            "type": "integer",
+            "maximum": 86400.0,
+            "minimum": 10.0,
+            "title": "Validity Seconds",
+            "default": 3600
+          },
+          "sandbox": {
+            "type": "boolean",
+            "title": "Sandbox",
+            "default": false
+          },
           "recipients": {
             "items": {
               "type": "string"
@@ -312,7 +440,8 @@
             "type": "string",
             "maxLength": 20,
             "minLength": 3,
-            "title": "Sender Name"
+            "title": "Sender Name",
+            "description": "Validated personal Sender ID, or DEFAULT to use the configured sender for the destination country"
           },
           "name": {
             "anyOf": [
@@ -375,8 +504,86 @@
         ],
         "title": "SmsOptOutIn"
       },
+      "SmsOtpCreateIn": {
+        "properties": {
+          "to": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 7,
+            "title": "To"
+          },
+          "sender_name": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 3,
+            "title": "Sender Name",
+            "default": "DEFAULT"
+          },
+          "purpose": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Purpose",
+            "default": "login"
+          },
+          "validity_seconds": {
+            "type": "integer",
+            "maximum": 600.0,
+            "minimum": 30.0,
+            "title": "Validity Seconds",
+            "default": 300
+          },
+          "sandbox": {
+            "type": "boolean",
+            "title": "Sandbox",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "to"
+        ],
+        "title": "SmsOtpCreateIn"
+      },
+      "SmsOtpVerifyIn": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "SmsOtpVerifyIn"
+      },
       "SmsSendIn": {
         "properties": {
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high"
+            ],
+            "title": "Priority",
+            "default": "normal"
+          },
+          "validity_seconds": {
+            "type": "integer",
+            "maximum": 86400.0,
+            "minimum": 10.0,
+            "title": "Validity Seconds",
+            "default": 3600
+          },
+          "sandbox": {
+            "type": "boolean",
+            "title": "Sandbox",
+            "default": false
+          },
           "test_mode": {
             "type": "boolean",
             "title": "Test Mode",
@@ -398,7 +605,8 @@
             "type": "string",
             "maxLength": 20,
             "minLength": 3,
-            "title": "Sender Name"
+            "title": "Sender Name",
+            "description": "Validated personal Sender ID, or DEFAULT to use the configured sender for the destination country"
           }
         },
         "type": "object",
@@ -432,6 +640,13 @@
           "type": {
             "type": "string",
             "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
           }
         },
         "type": "object",
@@ -481,6 +696,42 @@
             "title": "Cost",
             "type": "number",
             "description": "Price in points (1 point = 1 XOF (FCFA), up to 3 decimals)"
+          },
+          "priority": {
+            "default": 1,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Expires At"
+          },
+          "dispatched_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Dispatched At"
+          },
+          "test_segments": {
+            "default": 0,
+            "title": "Test Segments",
+            "type": "integer"
           },
           "status": {
             "title": "Status",

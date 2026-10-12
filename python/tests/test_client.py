@@ -15,6 +15,14 @@ class ClientTest(unittest.TestCase):
         with Weezy(**OPTIONS, transport=httpx.MockTransport(handler)) as client:
             self.assertEqual(client.sms.send(body={"to": "+2250700000000", "body": "Bonjour", "sender_name": "WEEZY"})['x_id'], "fixture")
 
+    def test_sandbox_is_forwarded(self):
+        def handler(request):
+            self.assertIs(json.loads(request.content)["sandbox"], True)
+            return httpx.Response(202, json={"code": 200, "msg": "ok", "data": {"source": "sandbox"}})
+        with Weezy(**OPTIONS, transport=httpx.MockTransport(handler)) as client:
+            result = client.sms.send(body={"to": "+2250700000000", "body": "Simulation", "sender_name": "DEFAULT", "sandbox": True})
+            self.assertEqual(result["source"], "sandbox")
+
     def test_http_errors_are_not_retried(self):
         calls = []
         def handler(request):
@@ -43,7 +51,7 @@ class ClientTest(unittest.TestCase):
             resources = [name for name in vars(client) if not name.startswith("_")]
             self.assertEqual(resources, ["sms"])
             methods = [name for name in vars(type(client.sms)) if not name.startswith("_")]
-            self.assertEqual(sorted(methods), ["balance", "opt_outs", "send", "send_bulk", "senders", "status"])
+            self.assertEqual(sorted(methods), ["balance", "create_otp", "opt_outs", "send", "send_bulk", "senders", "status", "verify_otp"])
 
     def test_timeout(self):
         def handler(request): raise httpx.ReadTimeout("timeout", request=request)

@@ -32,7 +32,7 @@ const client = new Weezy({
 const wallet = await client.sms.balance();
 console.log(`Balance: ${wallet.balance} points`); // 1 point = 1 XOF (FCFA)
 const message = await client.sms.send({
-  to: '+2250700000000', body: 'Bonjour !', sender_name: 'WEEZY',
+  to: '+2250700000000', body: 'Bonjour !', sender_name: 'DEFAULT', sandbox: true,
 });
 console.log(`Cost: ${message.cost} points`);
 const status = await client.sms.status({ message_x_id: message.x_id });
@@ -41,11 +41,11 @@ const status = await client.sms.status({ message_x_id: message.x_id });
 
 SMS amounts (`balance`, `cost`, `unit_price`, `amount_reserved`, ...) are numbers in **points** (1 point = 1 XOF (FCFA), up to 3 decimals), with `unit: 'point'` on the object.
 
-These send methods create real messages when used with live credentials. Use a dedicated test account and recipient when testing.
+Set `sandbox: true` in the request body to simulate an SMS without contacting a provider, debiting balance or consuming the free allowance. Omit it or use `false` for a real, normally billed send. Authentication, active country and sender rules still apply.
 
 CommonJS is supported: `const { Weezy } = require('@weezy-app/sdk')`.
 
-SMS methods: `balance()`, `senders()`, `send(body)`, `sendBulk(body)`, `status(params)`, `optOuts(body)`.
+SMS methods: `balance()`, `senders()`, `send(body)`, `sendBulk(body)`, `status(params)`, `optOuts(body)`, `createOtp(body)`, `verifyOtp(body, {challenge_id})`.
 
 See [the reference](API.md) for all SMS methods.
 
@@ -61,3 +61,9 @@ try {
 ```
 
 Transport/configuration options: `baseUrl` (full client API prefix), `timeoutMs`, and an injectable `fetch`. No automatic retries. Do not embed developer credentials in browser code.
+
+## Sandbox and DEFAULT sender
+
+`DEFAULT` selects the platform sender enabled by the administrator for the destination country. It remains available after free test segments are exhausted; real sends are billed normally. Sandbox is a per-request flag on send, bulk send and OTP creation, not a separate base URL or credential. Simulated messages have `source: "sandbox"`. Managed sandbox OTP uses `123456`; check both `verified` and `sandbox` and never authorize a real session with a sandbox result.
+
+Version 0.4.0 includes sandbox request types and managed OTP methods.

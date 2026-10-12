@@ -70,8 +70,16 @@ test('HTTP 404 preserves API detail and never retries', async () => {
   assert.equal(calls, 1);
 });
 
-test('client exposes exactly the six SMS operations', () => {
+test('client exposes the eight public SMS operations', () => {
   const client = new Weezy(credentials);
   assert.deepEqual(Object.keys(client), ['sms']);
-  assert.deepEqual(Object.keys(client.sms).sort(), ['balance', 'optOuts', 'send', 'sendBulk', 'senders', 'status']);
+  assert.deepEqual(Object.keys(client.sms).sort(), ['balance', 'createOtp', 'optOuts', 'send', 'sendBulk', 'senders', 'status', 'verifyOtp']);
+});
+
+test("sandbox is forwarded without sending a real message", async () => {
+  const client = new Weezy({clientId: "fixture", clientSecret: "test-only", fetch: async (_url, options) => {
+    assert.equal(JSON.parse(options.body).sandbox, true);
+    return new Response(JSON.stringify({code: 200, msg: "ok", data: {source: "sandbox"}}), {status: 202});
+  }});
+  assert.equal((await client.sms.send({to: "+2250700000000", body: "Simulation", sender_name: "DEFAULT", sandbox: true})).source, "sandbox");
 });
